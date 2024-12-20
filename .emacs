@@ -14,7 +14,6 @@
   (setq auto-package-update-delete-old-versions t)
   (setq auto-package-update-hide-results t)
   (auto-package-update-maybe)
-  ;; (package-refresh-contents)
   )
 
 (use-package emacs
@@ -22,9 +21,7 @@
   (set-face-attribute 'default nil :height 190)
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
   (add-to-list 'default-frame-alist '(undecorated . t))
-  ;; (setq-default default-directory (expand-file-name "./"))
 
-  ;; (global-display-fill-column-indicator-mode t)
   (defun enable-fill-column-indicator ()
     "Enable fill column indicator only in non-minibuffer windows."
     (unless (minibufferp)
@@ -46,14 +43,6 @@
   (add-hook 'before-save-hook 'my-conditional-after-save-hook)
 
   (define-key key-translation-map (kbd "ESC") (kbd "C-g"))
-  ;; (global-set-key [wheel-up] nil)
-  ;; (global-set-key [wheel-down] nil)
-  ;; (global-set-key [double-wheel-up] nil)
-  ;; (global-set-key [double-wheel-down] nil)
-  ;; (global-set-key [triple-wheel-up] nil)
-  ;; (global-set-key [triple-wheel-down] nil)
-  ;; (global-set-key [mouse-4] nil)
-  ;; (global-set-key [mouse-5] nil)
   (add-hook 'emacs-startup-hook (lambda () (recenter)))
   (add-hook 'emacs-startup-hook (lambda () (other-frame 0)))
   ;; (make-variable-buffer-local 'register-alist)
@@ -152,26 +141,9 @@ window."
       (comment-line 1)))
   (global-set-key (kbd "C-x C-;") 'my-comment-line)
 
-  ;; (setq display-buffer-alist
-  ;; 	'(("*Help*"
-  ;;          (display-buffer-reuse-window display-buffer-pop-up-window)
-  ;;          (inhibit-same-window . t))))
-
   (add-hook 'isearch-mode-hook
             (lambda ()
               (point-to-register ?r)))
-
-  ;; (defun my-display-help-buffer (buffer alist)
-  ;;   "Reuse the *Help* buffer if it exists, else open a new one."
-  ;;   (if (get-buffer "*Help*")
-  ;; 					; Reuse existing *Help* buffer
-  ;; 	(display-buffer-reuse-window buffer alist)
-  ;; 					; Open a new *Help* buffer if none
-  ;; 					; exists
-  ;;     (display-buffer-pop-up-window buffer alist)))
-  ;; ;; Add the custom display function to display-buffer-alist for *Help* buffers
-  ;; (add-to-list 'display-buffer-alist
-  ;;              '("\\*Help\\*" my-display-help-buffer))
 
   (defun smart-line-beginning ()
     "Move point to the beginning of text on the current line; if that is already
@@ -201,18 +173,9 @@ the current position of point, then move it to the beginning of the line."
 	(progn
           (newline-and-indent)
 	  (push-line-down)
-          ;; (next-line)
-          ;; (indent-for-tab-command)
-          ;; (previous-line)
-          ;; (indent-for-tab-command)
 	  )
       (progn
-	;; (indent-for-tab-command)
 	(newline-and-indent)
-	;; (previous-line)
-	;; (indent-for-tab-command)
-	;; (next-line)
-	;; (indent-for-tab-command)
 	)
       ))
   (global-set-key (kbd "RET") 'ret)
@@ -244,17 +207,6 @@ the current position of point, then move it to the beginning of the line."
              (let ((mark-even-if-inactive transient-mark-mode))
                (indent-region (region-beginning) (region-end) nil))))))
 
-  ;; (defun my-smart-beginning-of-line ()
-  ;;   "Go to the beginning of the line, then jump to the first non-whitespace character."
-  ;;   (interactive)
-  ;;   (let ((initial-point (point)))
-  ;;     (move-beginning-of-line 1)
-  ;;     (when (= initial-point (point))
-  ;; 	(back-to-indentation))))
-  ;; (add-hook 'prog-mode-hook
-  ;;           (lambda ()
-  ;;             (local-set-key (kbd "C-a") 'my-smart-beginning-of-line)))
-
   (setq inhibit-startup-message t)
   (setq initial-scratch-message nil)
   (setq display-line-numbers-type 'relative)
@@ -274,6 +226,7 @@ the current position of point, then move it to the beginning of the line."
   (setq next-screen-context-lines 1)
   (setq isearch-allow-scroll t)
   (setq-default auto-fill-function 'do-auto-fill)
+  ;; (setq sentence-end-double-space nil)
 
   :bind
   (
@@ -282,7 +235,6 @@ the current position of point, then move it to the beginning of the line."
    ("C-s-<backspace>" . kill-whole-line)
    )
 
-  ;; (setq sentence-end-double-space nil)
   )
 
 (use-package gruber-darker-theme
@@ -320,6 +272,7 @@ the current position of point, then move it to the beginning of the line."
 
 (use-package lsp-mode
   :hook ((c-mode c++-mode go-mode))
+  ;; :hook ((go-mode))
   :hook (lsp-mode . (lambda ()
 		      (add-hook #'before-save-hook
 				#'lsp-format-buffer t t)))
@@ -341,26 +294,37 @@ jumps to an out-of-view location."
   (advice-add 'xref-find-definitions :around #'my-recenter-if-outside-visible)
   (advice-add 'xref-go-back :around #'my-recenter-if-outside-visible)
 
+  (add-hook
+   'c-mode-common-hook
+   (lambda ()
+     (setq tab-width 8)
+     (setq c-basic-offset 8)
+     (setq indent-tabs-mode t)))
+  (add-hook 'c-mode-common-hook 'lsp-mode)
   )
 
-;; (use-package yasnippet)
+(use-package yasnippet)
 
 (use-package lsp-ui
-  :hook (LaTeX-mode)
+  ;; :hook (LaTeX-mode)
   :config
-  ;; (setq lsp-ui-peek-enable t)
+  (setq lsp-ui-peek-enable t)
   ;; (setq lsp-ui-peek-show-directory t)
-  ;; (setq lsp-ui-doc-enable t)
+  (setq lsp-ui-doc-enable t)
   ;; (setq lsp-ui-doc-delay 0)
   (setq lsp-ui-sideline-show-diagnostics t)
   ;; (setq lsp-ui-sideline-show-hover t)
   ;; (setq lsp-ui-sideline-delay 0)
+  ;; (setq lsp-clients-clangd-args '("-Wall" "-Wunused"))
+  ;; (custom-set-faces
+  ;;  '(lsp-ui-sideline-global ((t (:foreground "orange" :weight bold)))))
   )
 
 (use-package flycheck
-  :hook (lsp-ui-mode)
-
-  ;;
+  :hook (lsp-mode)
+  :config
+  (setq flycheck-gcc-warnings '("all" "unused"))
+  (setq flycheck-clang-warnings '("all" "unused"))
   )
 
 (use-package helm-lsp
@@ -370,7 +334,6 @@ jumps to an out-of-view location."
   (define-key global-map [remap execute-extended-command] #'helm-M-x)
   (define-key global-map [remap switch-to-buffer] #'helm-mini)
   (setq helm-mode-line-string "")
-
   ;; (setq helm-describe-variable-string "")
   )
 
@@ -379,15 +342,15 @@ jumps to an out-of-view location."
   (which-key-mode)
   )
 
-;; (use-package dap-mode
-;;   :hook (lsp-mode)
+;; ;; (use-package dap-mode
+;; ;;   :hook (lsp-mode)
+;; ;;   )
+
+;; (use-package lsp-treemacs
 ;;   )
 
-(use-package lsp-treemacs
-  )
-
-(use-package lsp-docker
-  )
+;; (use-package lsp-docker
+;;   )
 
 (use-package auctex
   :hook (LaTeX-mode . (lambda ()
@@ -398,10 +361,6 @@ jumps to an out-of-view location."
   (setq LaTeX-fill-column 80)
   ;; (add-hook 'LaTeX-mode-hook #'turn-on-auto-fill)
   (setq LaTeX-fill-break-before-code-comments t)
-  ;; (with-eval-after-load 'tex
-  ;;   (add-to-list 'TeX-command-list
-  ;; 		 '("LaTeX with Args" "pdflatex -synctex=1 -interaction=nonstopmode %s"
-  ;;                  TeX-run-command t t :help "Run LaTeX with custom arguments")))
   )
 
 (use-package js2-mode
@@ -423,38 +382,46 @@ jumps to an out-of-view location."
   :config
   (require 'smartparens-config)
   (sp-use-smartparens-bindings)
-  :bind ("<backspace>" . sp-backward-delete-char)
-  :bind ("C-d" . sp-delete-char)
+  (sp-with-modes '(malabar-mode c++-mode java-mode)
+    (sp-local-pair "{" nil :post-handlers '(("||\n[i]" "RET"))))
+  (sp-local-pair 'c++-mode "/*" "*/" :post-handlers '((" | " "SPC")
+                                                      ("* ||\n[i]" "RET")))
+
+  (sp-with-modes '(js2-mode typescript-mode java-mode)
+    (sp-local-pair "/**" "*/" :post-handlers '(("| " "SPC")
+                                               ("* ||\n[i]" "RET"))))
+  ;; :bind ("<backspace>" . sp-backward-delete-char)
+  ;; :bind ("C-d" . sp-delete-char)
   )
 
-(use-package rainbow-mode
-  :hook ((prog-mode text-mode)))
+;; (use-package rainbow-mode
+;;   :hook ((prog-mode text-mode)))
 
 (use-package minions
   :config
   (minions-mode 1)
   )
 
-(use-package activities
-  :init
-  (activities-mode 1)
-  ;; (activities-tabs-mode)
-  ;; Prevent `edebug' default bindings from interfering.
-  (setq edebug-inhibit-emacs-lisp-mode-bindings t)
+;; (use-package activities
+;;   :init
+;;   (activities-mode 1)
+;;   ;; (activities-tabs-mode)
+;;   ;; Prevent `edebug' default bindings from interfering.
+;;   (setq edebug-inhibit-emacs-lisp-mode-bindings t)
 
-  :bind
-  (
-  ;; (("C-c C-a C-n" . activities-new)
-   ("C-; C-d" . activities-define)
-   ("C-; C-a" . activities-resume)
-   ("C-; C-s" . activities-suspend)
-   ("C-; C-k" . activities-discard)
-   ("C-; RET" . activities-switch)
-   ("C-; b" . activities-switch-buffer)
-   ("C-; g" . activities-revert)
-   ("C-; l" . activities-list)
-   )
-  )
+;;   :bind
+;;   (
+;;   ;; (("C-c C-a C-n" . activities-new)
+;;    ("C-; C-d" . activities-define)
+;;    ("C-; C-a" . activities-resume)
+;;    ("C-; C-s" . activities-suspend)
+;;    ("C-; C-k" . activities-discard)
+;;    ("C-; RET" . activities-switch)
+;;    ("C-; b" . activities-switch-buffer)
+;;    ("C-; g" . activities-revert)
+;;    ("C-; l" . activities-list)
+;;    )
+;;   )
 
 (use-package hungry-delete
   ;; :hook ((prog-mode text-mode))
@@ -477,42 +444,25 @@ jumps to an out-of-view location."
   (exec-path-from-shell-initialize)
   )
 
-(use-package highlight-symbol
-  :hook ((prog-mode text-mode LaTeX-mode)
-	 . highlight-symbol-mode)
-  :hook ((prog-mode text-mode LaTeX-mode)
-	 . highlight-symbol-nav-mode)
-  :config
-  (setq highlight-symbol-idle-delay 0)
-  (defun my-highlight-recenter-if-needed ()
-    "Recenter the screen if the next `highlight` match is outside the visible
-window."
-    (when (not (pos-visible-in-window-p (point)))
-      (recenter)))
-  (advice-add 'highlight-symbol-next :after 'my-highlight-recenter-if-needed)
-  (advice-add 'highlight-symbol-prev :after 'my-highlight-recenter-if-needed)
-  (custom-set-faces
-   '(highlight-symbol-face ((t (:background "#c73c3f")))))
-  )
-
-(use-package hi-lock
-  :hook (highlight-symbol-mode)
-  )
+;; ;; (use-package highlight-symbol
+;; ;;   :hook ((prog-mode text-mode LaTeX-mode)
+;; ;; 	 . highlight-symbol-mode)
+;; ;;   :hook ((prog-mode text-mode LaTeX-mode)
+;; ;; 	 . highlight-symbol-nav-mode)
+;; ;;   :config
+;; ;;   (setq highlight-symbol-idle-delay 0)
+;; ;;   (defun my-highlight-recenter-if-needed ()
+;; ;;     "Recenter the screen if the next `highlight` match is outside the visible
+;; ;; window."
+;; ;;     (when (not (pos-visible-in-window-p (point)))
+;; ;;       (recenter)))
+;; ;;   (advice-add 'highlight-symbol-next :after 'my-highlight-recenter-if-needed)
+;; ;;   (advice-add 'highlight-symbol-prev :after 'my-highlight-recenter-if-needed)
+;; ;;   (custom-set-faces
+;; ;;    '(highlight-symbol-face ((t (:background "#c73c3f")))))
+;; ;;   )
 
 (use-package disable-mouse
   :config
   (global-disable-mouse-mode))
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(highlight-symbol-face ((t (:background "#c73c3f")))))
 (put 'dired-find-alternate-file 'disabled nil)
