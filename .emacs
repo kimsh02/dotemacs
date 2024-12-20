@@ -40,7 +40,8 @@
   (defun my-conditional-after-save-hook ()
     "Run `my-custom-function` only in specific modes."
     (when (derived-mode-p 'emacs-lisp-mode 'markdown-mode 'LaTeX-mode
-			  'fundamental-mode 'sh-mode 'text-mode 'python-mode)
+			  'fundamental-mode 'sh-mode 'text-mode 'python-mode
+			  'sql-mode)
       (delete-trailing-whitespace)))
   (add-hook 'before-save-hook 'my-conditional-after-save-hook)
 
