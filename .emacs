@@ -38,7 +38,7 @@
     "Run `my-custom-function` only in specific modes."
     (when (derived-mode-p 'emacs-lisp-mode 'markdown-mode 'LaTeX-mode
 			  'fundamental-mode 'sh-mode 'text-mode 'python-mode
-			  'sql-mode)
+			  'sql-mode 'cmake-mode)
       (delete-trailing-whitespace)))
   (add-hook 'before-save-hook 'my-conditional-after-save-hook)
 
@@ -167,18 +167,18 @@ the current position of point, then move it to the beginning of the line."
     (indent-for-tab-command))
   (global-set-key (kbd "C-o") 'push-line-down)
 
-  (defun ret ()
-    (interactive)
-    (if (eq ?} (char-after))
-	(progn
-          (newline-and-indent)
-	  (push-line-down)
-	  )
-      (progn
-	(newline-and-indent)
-	)
-      ))
-  (global-set-key (kbd "RET") 'ret)
+  ;; (defun ret ()
+  ;;   (interactive)
+  ;;   (if (eq ?} (char-after))
+  ;; 	(progn
+  ;;         (newline-and-indent)
+  ;; 	  (push-line-down)
+  ;; 	  )
+  ;;     (progn
+  ;; 	(newline-and-indent)
+  ;; 	)
+  ;;     ))
+  ;; (global-set-key (kbd "RET") 'ret)
 
   (dolist (command '(yank yank-pop))
     (eval
@@ -227,6 +227,7 @@ the current position of point, then move it to the beginning of the line."
   (setq isearch-allow-scroll t)
   (setq-default auto-fill-function 'do-auto-fill)
   ;; (setq sentence-end-double-space nil)
+  (setq compile-command "make run")
 
   :bind
   (
@@ -301,9 +302,18 @@ jumps to an out-of-view location."
      (setq c-basic-offset 8)
      (setq indent-tabs-mode t)))
   (add-hook 'c-mode-common-hook 'lsp-mode)
+
+  (add-hook 'c-mode-hook
+            (lambda ()
+              (local-set-key (kbd "C-c C-c") 'compile)))
+  (add-hook 'c++-mode-hook
+            (lambda ()
+              (local-set-key (kbd "C-c C-c") 'compile)))
   )
 
 (use-package yasnippet)
+
+(use-package cmake-mode)
 
 (use-package lsp-ui
   ;; :hook (LaTeX-mode)
@@ -466,3 +476,15 @@ jumps to an out-of-view location."
   :config
   (global-disable-mouse-mode))
 (put 'dired-find-alternate-file 'disabled nil)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages nil))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
