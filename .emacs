@@ -229,6 +229,12 @@ the current position of point, then move it to the beginning of the line."
   ;; (setq sentence-end-double-space nil)
   (setq compile-command "make run")
 
+  (defun disable-auto-fill-mode-in-specific-modes ()
+    (if (derived-mode-p 'sh-mode)  ; Replace with modes where you want to disable auto-fill
+	(auto-fill-mode -1)))
+  (add-hook 'text-mode-hook 'disable-auto-fill-mode-in-specific-modes)
+  (add-hook 'prog-mode-hook 'disable-auto-fill-mode-in-specific-modes)
+
   :bind
   (
    ("C-; r" . read-only-mode)
