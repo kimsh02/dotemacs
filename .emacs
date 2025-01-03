@@ -219,7 +219,7 @@ the current position of point, then move it to the beginning of the line."
 	delete-old-versions t
 	version-control t)
   (setq ring-bell-function 'ignore)
-  ;; (setq visible-bell t)  ;; Makes the screen flash instead of beeping
+  (setq visible-bell t)  ;; Makes the screen flash instead of beeping
   (setq case-fold-search nil)
   (setq scroll-preserve-screen-position 'always)
   (setq scroll-conservatively 101)
