@@ -328,7 +328,9 @@ jumps to an out-of-view location."
   ;; (setq lsp-ui-peek-show-directory t)
   (setq lsp-ui-doc-enable t)
   ;; (setq lsp-ui-doc-delay 0)
-  (setq lsp-ui-sideline-show-diagnostics t)
+
+  ;; (setq lsp-ui-sideline-show-diagnostics t)
+
   ;; (setq lsp-ui-sideline-show-hover t)
   ;; (setq lsp-ui-sideline-delay 0)
   ;; (setq lsp-clients-clangd-args '("-Wall" "-Wunused"))
@@ -480,7 +482,8 @@ jumps to an out-of-view location."
 
 (use-package disable-mouse
   :config
-  (global-disable-mouse-mode))
+  (global-disable-mouse-mode)
+  )
 (put 'dired-find-alternate-file 'disabled nil)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
