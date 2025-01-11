@@ -321,22 +321,22 @@ jumps to an out-of-view location."
 
 (use-package cmake-mode)
 
-(use-package lsp-ui
-  ;; :hook (LaTeX-mode)
-  :config
-  (setq lsp-ui-peek-enable t)
-  ;; (setq lsp-ui-peek-show-directory t)
-  (setq lsp-ui-doc-enable t)
-  ;; (setq lsp-ui-doc-delay 0)
+;; (use-package lsp-ui
+;;   ;; :hook (LaTeX-mode)
+;;   :config
+;;   (setq lsp-ui-peek-enable t)
+;;   ;; (setq lsp-ui-peek-show-directory t)
+;;   (setq lsp-ui-doc-enable t)
+;;   ;; (setq lsp-ui-doc-delay 0)
 
-  ;; (setq lsp-ui-sideline-show-diagnostics t)
+;;   ;; (setq lsp-ui-sideline-show-diagnostics t)
 
-  ;; (setq lsp-ui-sideline-show-hover t)
-  ;; (setq lsp-ui-sideline-delay 0)
-  ;; (setq lsp-clients-clangd-args '("-Wall" "-Wunused"))
-  ;; (custom-set-faces
-  ;;  '(lsp-ui-sideline-global ((t (:foreground "orange" :weight bold)))))
-  )
+;;   ;; (setq lsp-ui-sideline-show-hover t)
+;;   ;; (setq lsp-ui-sideline-delay 0)
+;;   ;; (setq lsp-clients-clangd-args '("-Wall" "-Wunused"))
+;;   ;; (custom-set-faces
+;;   ;;  '(lsp-ui-sideline-global ((t (:foreground "orange" :weight bold)))))
+;;   )
 
 (use-package flycheck
   :hook (lsp-mode)
@@ -490,7 +490,11 @@ jumps to an out-of-view location."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
+ '(package-selected-packages
+   '(auctex auto-package-update cmake-mode company disable-mouse
+	    exec-path-from-shell flycheck go-mode gruber-darker-theme helm-lsp
+	    hungry-delete js2-mode minions prettier python-black smartparens
+	    syntax-subword yasnippet)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
