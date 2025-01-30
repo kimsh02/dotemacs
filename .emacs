@@ -38,7 +38,7 @@
     "Run `my-custom-function` only in specific modes."
     (when (derived-mode-p 'emacs-lisp-mode 'markdown-mode 'LaTeX-mode
 			  'fundamental-mode 'sh-mode 'text-mode 'python-mode
-			  'sql-mode 'cmake-mode)
+			  'sql-mode 'cmake-mode 'docker-compose-mode 'dockerfile-mode)
       (delete-trailing-whitespace)))
   (add-hook 'before-save-hook 'my-conditional-after-save-hook)
 
@@ -235,6 +235,9 @@ the current position of point, then move it to the beginning of the line."
   (add-hook 'text-mode-hook 'disable-auto-fill-mode-in-specific-modes)
   (add-hook 'prog-mode-hook 'disable-auto-fill-mode-in-specific-modes)
 
+  (add-to-list 'auto-mode-alist '("\\.tpp\\'" . c++-mode))
+  ;; (setq user-emacs-directory (expand-file-name "~/emacs-config/"))
+
   :bind
   (
    ("C-; r" . read-only-mode)
@@ -321,6 +324,9 @@ jumps to an out-of-view location."
 
 (use-package cmake-mode)
 
+(use-package dockerfile-mode)
+(use-package docker-compose-mode)
+
 ;; (use-package lsp-ui
 ;;   ;; :hook (LaTeX-mode)
 ;;   :config
@@ -371,6 +377,7 @@ jumps to an out-of-view location."
 ;;   )
 
 (use-package auctex
+  :defer t
   :hook (LaTeX-mode . (lambda ()
                         (setq TeX-auto-save t)
                         (setq TeX-parse-self t)))
@@ -379,6 +386,12 @@ jumps to an out-of-view location."
   (setq LaTeX-fill-column 80)
   ;; (add-hook 'LaTeX-mode-hook #'turn-on-auto-fill)
   (setq LaTeX-fill-break-before-code-comments t)
+  ;; Add "-shell-escape" to pdflatex command in AUCTeX
+  (with-eval-after-load "tex"
+    (add-to-list 'TeX-command-list
+                 '("LaTeX with shell escape"
+                   "pdflatex -shell-escape %t"
+                   TeX-run-command nil t)))
   )
 
 (use-package js2-mode
@@ -490,11 +503,7 @@ jumps to an out-of-view location."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(auctex auto-package-update cmake-mode company disable-mouse
-	    exec-path-from-shell flycheck go-mode gruber-darker-theme helm-lsp
-	    hungry-delete js2-mode minions prettier python-black smartparens
-	    syntax-subword yasnippet)))
+ '(package-selected-packages nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
