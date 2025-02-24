@@ -273,108 +273,102 @@ the current position of point, then move it to the beginning of the line."
 ;;   :config
 ;;   )
 
-(use-package python-black
-  :hook (python-mode . python-black-on-save-mode)
-  ;; :hook (python-mode . (lambda ()
-  ;; 			 (setq tab-width 4)
-  ;; 			 (setq python-indent-offset 4)))
-  )
+;; (use-package python-black
+;;   :hook (python-mode . python-black-on-save-mode)
+;;   ;; :hook (python-mode . (lambda ()
+;;   ;; 			 (setq tab-width 4)
+;;   ;; 			 (setq python-indent-offset 4)))
+;;   )
 
-(use-package lsp-mode
-  :hook ((c-mode c++-mode go-mode))
-  ;; :hook ((go-mode))
-  :hook (lsp-mode . (lambda ()
-		      (add-hook #'before-save-hook
-				#'lsp-format-buffer t t)))
-  :hook (lsp-mode . (lambda ()
-		      (add-hook #'before-save-hook
-				#'lsp-organize-imports t t)))
+(use-package eglot
+  :ensure t
+  :hook ((go-mode . eglot-ensure)
+         (c-mode . eglot-ensure)
+         (c++-mode . eglot-ensure)
+         (python-mode . eglot-ensure)
+	 (c-mode-common . eglot-ensure)
+	 (c-mode-common . (lambda ()
+			    (setq tab-width 8)
+			    (setq c-basic-offset 8)
+			    (setq indent-tabs-mode t))))
   :config
-  (setq lsp-enable-symbol-highlighting nil)
-  (setq lsp-enable-snippet nil)
-  (setf lsp-session-folders-blacklist nil)
-
-  (defun my-recenter-if-outside-visible (orig-fun &rest args)
-    "Recenter screen if `xref-find-definitions`
-jumps to an out-of-view location."
-    (let ((prev-pos (point)))  ; Store the current position
-      (apply orig-fun args)    ; Call the original `xref-find-definitions`
-      (unless (pos-visible-in-window-p)  ; Check if new position is visible
-	(recenter))))           ; Recenter if it’s not visible
-  (advice-add 'xref-find-definitions :around #'my-recenter-if-outside-visible)
-  (advice-add 'xref-go-back :around #'my-recenter-if-outside-visible)
-
-  (add-hook
-   'c-mode-common-hook
-   (lambda ()
-     (setq tab-width 8)
-     (setq c-basic-offset 8)
-     (setq indent-tabs-mode t)))
-  (add-hook 'c-mode-common-hook 'lsp-mode)
-
-  (add-hook 'c-mode-hook
-            (lambda ()
-              (local-set-key (kbd "C-c C-c") 'compile)))
-  (add-hook 'c++-mode-hook
-            (lambda ()
-              (local-set-key (kbd "C-c C-c") 'compile)))
+  (setq eglot-confirm-server-initiated-edits nil)
+  (add-to-list 'eglot-server-programs '(go-mode . ("gopls")))
+  (add-to-list 'eglot-server-programs '(c-mode . ("clangd")))
+  (add-to-list 'eglot-server-programs '(c++-mode . ("clangd")))
+  (add-to-list 'eglot-server-programs '(python-mode . ("pylsp")))
+  (add-hook #'before-save-hook #'eglot-format-buffer t t)
   )
 
-(use-package yasnippet)
+;; (use-package lsp-mode
+;;   :hook ((c-mode c++-mode go-mode))
+;;   ;; :hook ((go-mode))
+;;   :hook (lsp-mode . (lambda ()
+;; 		      (add-hook #'before-save-hook
+;; 				#'lsp-format-buffer t t)))
+;;   :hook (lsp-mode . (lambda ()
+;; 		      (add-hook #'before-save-hook
+;; 				#'lsp-organize-imports t t)))
+;;   :config
+;;   (setq lsp-enable-symbol-highlighting nil)
+;;   (setq lsp-enable-snippet nil)
+;;   (setf lsp-session-folders-blacklist nil)
+
+;;   (defun my-recenter-if-outside-visible (orig-fun &rest args)
+;;     "Recenter screen if `xref-find-definitions`
+;; jumps to an out-of-view location."
+;;     (let ((prev-pos (point)))  ; Store the current position
+;;       (apply orig-fun args)    ; Call the original `xref-find-definitions`
+;;       (unless (pos-visible-in-window-p)  ; Check if new position is visible
+;; 	(recenter))))           ; Recenter if it’s not visible
+;;   (advice-add 'xref-find-definitions :around #'my-recenter-if-outside-visible)
+;;   (advice-add 'xref-go-back :around #'my-recenter-if-outside-visible)
+
+;;   (add-hook
+;;    'c-mode-common-hook
+;;    (lambda ()
+;;      (setq tab-width 8)
+;;      (setq c-basic-offset 8)
+;;      (setq indent-tabs-mode t)))
+;;   (add-hook 'c-mode-common-hook 'lsp-mode)
+
+;;   (add-hook 'c-mode-hook
+;;             (lambda ()
+;;               (local-set-key (kbd "C-c C-c") 'compile)))
+;;   (add-hook 'c++-mode-hook
+;;             (lambda ()
+;;               (local-set-key (kbd "C-c C-c") 'compile)))
+;;   )
+
+;; (use-package yasnippet)
 
 (use-package cmake-mode)
-
 (use-package dockerfile-mode)
 (use-package docker-compose-mode)
 
-;; (use-package lsp-ui
-;;   ;; :hook (LaTeX-mode)
-;;   :config
-;;   (setq lsp-ui-peek-enable t)
-;;   ;; (setq lsp-ui-peek-show-directory t)
-;;   (setq lsp-ui-doc-enable t)
-;;   ;; (setq lsp-ui-doc-delay 0)
-
-;;   ;; (setq lsp-ui-sideline-show-diagnostics t)
-
-;;   ;; (setq lsp-ui-sideline-show-hover t)
-;;   ;; (setq lsp-ui-sideline-delay 0)
-;;   ;; (setq lsp-clients-clangd-args '("-Wall" "-Wunused"))
-;;   ;; (custom-set-faces
-;;   ;;  '(lsp-ui-sideline-global ((t (:foreground "orange" :weight bold)))))
-;;   )
-
-(use-package flycheck
-  :hook (lsp-mode)
+(use-package ivy
+  :ensure t
+  :diminish
+  :init (ivy-mode 1)
   :config
-  (setq flycheck-gcc-warnings '("all" "unused"))
-  (setq flycheck-clang-warnings '("all" "unused"))
-  )
+  (setq ivy-use-virtual-buffers t
+        ivy-count-format "(%d/%d) "))
 
-(use-package helm-lsp
-  :config
-  (helm-mode)
-  (define-key global-map [remap find-file] #'helm-find-files)
-  (define-key global-map [remap execute-extended-command] #'helm-M-x)
-  (define-key global-map [remap switch-to-buffer] #'helm-mini)
-  (setq helm-mode-line-string "")
-  ;; (setq helm-describe-variable-string "")
-  )
+(use-package counsel
+  :ensure t
+  :after ivy
+  :config (counsel-mode 1))
+
+(use-package smex
+  :ensure t
+  :after ivy
+  :bind ("M-x" . smex)
+  :init (smex-initialize))
 
 (use-package which-key
   :config
   (which-key-mode)
   )
-
-;; ;; (use-package dap-mode
-;; ;;   :hook (lsp-mode)
-;; ;;   )
-
-;; (use-package lsp-treemacs
-;;   )
-
-;; (use-package lsp-docker
-;;   )
 
 (use-package auctex
   :defer t
@@ -417,7 +411,6 @@ jumps to an out-of-view location."
     (sp-local-pair "{" nil :post-handlers '(("||\n[i]" "RET"))))
   (sp-local-pair 'c++-mode "/*" "*/" :post-handlers '((" | " "SPC")
                                                       ("* ||\n[i]" "RET")))
-
   (sp-with-modes '(js2-mode typescript-mode java-mode)
     (sp-local-pair "/**" "*/" :post-handlers '(("| " "SPC")
                                                ("* ||\n[i]" "RET"))))
@@ -465,7 +458,7 @@ jumps to an out-of-view location."
   :bind
   (("M-f" . syntax-subword-forward)
    ("M-b" . syntax-subword-backward)
-   ("C-<backspace>" . sp-backward-kill-word)
+   ("C-<backspace>" . syntax-subword-backward-kill)
    ("M-d" . syntax-subword-kill)
    )
   )
@@ -475,38 +468,27 @@ jumps to an out-of-view location."
   (exec-path-from-shell-initialize)
   )
 
-;; ;; (use-package highlight-symbol
-;; ;;   :hook ((prog-mode text-mode LaTeX-mode)
-;; ;; 	 . highlight-symbol-mode)
-;; ;;   :hook ((prog-mode text-mode LaTeX-mode)
-;; ;; 	 . highlight-symbol-nav-mode)
-;; ;;   :config
-;; ;;   (setq highlight-symbol-idle-delay 0)
-;; ;;   (defun my-highlight-recenter-if-needed ()
-;; ;;     "Recenter the screen if the next `highlight` match is outside the visible
-;; ;; window."
-;; ;;     (when (not (pos-visible-in-window-p (point)))
-;; ;;       (recenter)))
-;; ;;   (advice-add 'highlight-symbol-next :after 'my-highlight-recenter-if-needed)
-;; ;;   (advice-add 'highlight-symbol-prev :after 'my-highlight-recenter-if-needed)
-;; ;;   (custom-set-faces
-;; ;;    '(highlight-symbol-face ((t (:background "#c73c3f")))))
-;; ;;   )
+;; (use-package highlight-symbol
+;;   :hook ((prog-mode text-mode LaTeX-mode)
+;; 	 . highlight-symbol-mode)
+;;   :hook ((prog-mode text-mode LaTeX-mode)
+;; 	 . highlight-symbol-nav-mode)
+;;   :config
+;;   (setq highlight-symbol-idle-delay 0)
+;;   (defun my-highlight-recenter-if-needed ()
+;;     "Recenter the screen if the next `highlight` match is outside the visible
+;; window."
+;;     (when (not (pos-visible-in-window-p (point)))
+;;       (recenter)))
+;;   (advice-add 'highlight-symbol-next :after 'my-highlight-recenter-if-needed)
+;;   (advice-add 'highlight-symbol-prev :after 'my-highlight-recenter-if-needed)
+;;   (custom-set-faces
+;;    '(highlight-symbol-face ((t (:background "#c73c3f")))))
+;;   )
 
 (use-package disable-mouse
   :config
   (global-disable-mouse-mode)
   )
+
 (put 'dired-find-alternate-file 'disabled nil)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
