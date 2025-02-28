@@ -59,20 +59,36 @@
   (scroll-bar-mode -1)
   ;; (transient-mark-mode -1)
 
-  (defadvice message (before who-said-that activate)
-    "Find out who said that thing. and say so."
-    (let ((trace nil) (n 1) (frame nil))
+  ;; (defadvice message (before who-said-that activate)
+  ;;   "Find out who said that thing. and say so."
+  ;;   (let ((trace nil) (n 1) (frame nil))
+  ;;     (while (setq frame (backtrace-frame n))
+  ;;       (setq n     (1+ n)
+  ;;             trace (cons (cadr frame) trace)) )
+  ;;     (ad-set-arg 0 (concat "<<%S>>:\n" (ad-get-arg 0)))
+  ;;     (ad-set-args 1 (cons trace (ad-get-args 1))) ))
+  ;; (ad-disable-advice 'message 'before 'who-said-that)
+  ;; (ad-update 'message)
+  ;; (defadvice message (before when-was-that activate)
+  ;;   "Add timestamps to `message' output."
+  ;;   (ad-set-arg 0 (concat (format-time-string "[%Y-%m-%d %T %Z] ")
+  ;;                         (ad-get-arg 0)) ))
+
+  (defun who-said-that--filter (args)
+    (let ((trace nil) (n 1) frame)
       (while (setq frame (backtrace-frame n))
-        (setq n     (1+ n)
-              trace (cons (cadr frame) trace)) )
-      (ad-set-arg 0 (concat "<<%S>>:\n" (ad-get-arg 0)))
-      (ad-set-args 1 (cons trace (ad-get-args 1))) ))
-  (ad-disable-advice 'message 'before 'who-said-that)
-  (ad-update 'message)
-  (defadvice message (before when-was-that activate)
-    "Add timestamps to `message' output."
-    (ad-set-arg 0 (concat (format-time-string "[%Y-%m-%d %T %Z] ")
-                          (ad-get-arg 0)) ))
+	(setq n (1+ n)
+              trace (cons (cadr frame) trace)))
+      (setcar args (concat "<<%S>>:\n" (car args)))
+      (setf (nth 1 args) (cons trace (nth 1 args)))
+      args))
+  (advice-add 'message :filter-args #'who-said-that--filter)
+  (advice-remove 'message #'who-said-that--filter)
+
+  (defun when-was-that--filter (args)
+    (setcar args (concat (format-time-string "[%Y-%m-%d %T %Z] ") (car args)))
+    args)
+  (advice-add 'message :filter-args #'when-was-that--filter)
 
   (defun save-place-reposition ()
     "Force windows to recenter current line (with saved position)."
@@ -238,6 +254,15 @@ the current position of point, then move it to the beginning of the line."
   (add-to-list 'auto-mode-alist '("\\.tpp\\'" . c++-mode))
   ;; (setq user-emacs-directory (expand-file-name "~/emacs-config/"))
 
+  ;;; scroll up and down buffer by one line
+  (setq scroll-preserve-screen-position nil)
+  (global-set-key (kbd "M-n") 'scroll-up-line)
+  (global-set-key (kbd "M-p") 'scroll-down-line)
+
+  ;; (set-frame-font "-*-Space Mono-regular-normal-normal-*-19-*-*-*-m-0-iso10646-1" t t)
+  (set-frame-font "-*-Space Mono for Powerline-regular-normal-normal-*-19-*-*-*-m-0-iso10646-1" t t)
+  (add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
+
   :bind
   (
    ("C-; r" . read-only-mode)
@@ -297,7 +322,17 @@ the current position of point, then move it to the beginning of the line."
   (add-to-list 'eglot-server-programs '(c-mode . ("clangd")))
   (add-to-list 'eglot-server-programs '(c++-mode . ("clangd")))
   (add-to-list 'eglot-server-programs '(python-mode . ("pylsp")))
-  (add-hook #'before-save-hook #'eglot-format-buffer t t)
+  (add-hook 'before-save-hook 'eglot-format-buffer)
+
+  (defun my-recenter-if-outside-visible (orig-fun &rest args)
+    "Recenter screen if `xref-find-definitions`
+  jumps to an out-of-view location."
+    (let ((prev-pos (point)))  ; Store the current position
+      (apply orig-fun args)    ; Call the original `xref-find-definitions`
+      (unless (pos-visible-in-window-p)  ; Check if new position is visible
+	(recenter))))           ; Recenter if it’s not visible
+  (advice-add 'xref-find-definitions :around #'my-recenter-if-outside-visible)
+  (advice-add 'xref-go-back :around #'my-recenter-if-outside-visible)
   )
 
 ;; (use-package lsp-mode
@@ -492,3 +527,15 @@ the current position of point, then move it to the beginning of the line."
   )
 
 (put 'dired-find-alternate-file 'disabled nil)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages nil))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
