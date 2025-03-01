@@ -34,13 +34,7 @@
   (global-auto-revert-mode t)
   (global-display-line-numbers-mode 1)
 
-  (defun my-conditional-after-save-hook ()
-    "Run `my-custom-function` only in specific modes."
-    (when (derived-mode-p 'emacs-lisp-mode 'markdown-mode 'LaTeX-mode
-			  'fundamental-mode 'sh-mode 'text-mode 'python-mode
-			  'sql-mode 'cmake-mode 'docker-compose-mode 'dockerfile-mode)
-      (delete-trailing-whitespace)))
-  (add-hook 'before-save-hook 'my-conditional-after-save-hook)
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
   (define-key key-translation-map (kbd "ESC") (kbd "C-g"))
   (add-hook 'emacs-startup-hook (lambda () (recenter)))
@@ -237,13 +231,15 @@ the current position of point, then move it to the beginning of the line."
   (setq ring-bell-function 'ignore)
   (setq visible-bell t)  ;; Makes the screen flash instead of beeping
   (setq case-fold-search nil)
+
   (setq scroll-preserve-screen-position 'always)
   (setq scroll-conservatively 101)
   (setq next-screen-context-lines 1)
+
   (setq isearch-allow-scroll t)
   (setq-default auto-fill-function 'do-auto-fill)
   ;; (setq sentence-end-double-space nil)
-  (setq compile-command "make run")
+  ;; (setq compile-command "make run")
 
   (defun disable-auto-fill-mode-in-specific-modes ()
     (if (derived-mode-p 'sh-mode)  ; Replace with modes where you want to disable auto-fill
@@ -255,13 +251,13 @@ the current position of point, then move it to the beginning of the line."
   ;; (setq user-emacs-directory (expand-file-name "~/emacs-config/"))
 
   ;;; scroll up and down buffer by one line
-  (setq scroll-preserve-screen-position nil)
   (global-set-key (kbd "M-n") 'scroll-up-line)
   (global-set-key (kbd "M-p") 'scroll-down-line)
 
   ;; (set-frame-font "-*-Space Mono-regular-normal-normal-*-19-*-*-*-m-0-iso10646-1" t t)
   (set-frame-font "-*-Space Mono for Powerline-regular-normal-normal-*-19-*-*-*-m-0-iso10646-1" t t)
   (add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
 
   :bind
   (
@@ -276,22 +272,65 @@ the current position of point, then move it to the beginning of the line."
   :config
   (load-theme 'gruber-darker t))
 
-(use-package company
-  :hook ((prog-mode text-mode LaTeX-mode))
-  :config
-  ;; (setq company-idle-delay
-  ;; 	(lambda () (if (company-in-string-or-comment) nil 0)))
-  (setq company-idle-delay 0)
-  (setq company-minimum-prefix-length 3)
-  (setq company-inhibit-inside-symbols t)
-  (setq company-selection-wrap-around t)
-  (setq company-tooltip-align-annotations t)
-  (setq company-format-margin-function #'company-text-icons-margin)
-  (setq company-text-face-extra-attributes
-	'(:weight bold :slant italic))
-  (setq company-text-icons-add-background t)
-  (setq company-tooltip-offset-display 'lines)
+(use-package orderless
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic))        ;; Use Orderless for completion filtering [oai_citation_attribution:4‡kristofferbalintona.me](https://kristofferbalintona.me/posts/corfu-kind-icon-and-corfu-doc/#:~:text=%E2%80%A6%20%2A%20any%20built,company)
+  (completion-category-defaults nil)            ;; No default filtering per category (allow Orderless in all contexts)
+  (completion-category-overrides '((file (styles . (partial-completion)))))
   )
+
+(use-package corfu
+  :ensure t
+  :custom
+  (corfu-cycle t)                ;; Enable cycling through candidates (wrap-around)
+  (corfu-auto t)                 ;; Enable automatic completion
+  (corfu-auto-delay 0)           ;; No delay for auto-completion (show suggestions immediately)
+  (corfu-auto-prefix 2)          ;; Pop up after typing 2 characters (for responsiveness)
+  (corfu-scroll-margin 5)        ;; Use scroll margin when navigating candidates
+  ;; Orderless integration
+  (corfu-separator ?\s)          ;; Use space as separator for Orderless components [oai_citation_attribution:7‡github.com](https://github.com/minad/corfu#:~:text=,packages%20via%20margin%20formatter%20functions)
+  (corfu-quit-at-boundary t)   ;; Don't quit at word boundary, allow space to continue completion
+  (corfu-quit-no-match 'separator) ;; Don't quit if input is non-matching *but* has a separator (allow multiple terms)
+  ;; UI behavior
+  (corfu-preview-current nil)    ;; Disable inline preview of current candidate
+  (corfu-preselect 'first)       ;; Preselect first candidate (or use 'prompt for none)
+  (corfu-echo-documentation 0.25) ;; Briefly show documentation in echo area after 0.25s
+  :bind (:map corfu-map
+              ("TAB" . corfu-next)    ;; Use TAB to go to next candidate
+              ("S-TAB" . corfu-previous))  ;; Use Shift+TAB to go to previous candidate
+  :init
+  (global-corfu-mode 1)          ;; Enable Corfu globally in all buffers [oai_citation_attribution:8‡github.com](https://github.com/minad/corfu#:~:text=%3B%3B%20Recommended%3A%20Enable%20Corfu%20globally,mode)
+  :config
+  (corfu-history-mode 1)         ;; Enable history for M-x corfu-history (save selection order)
+  (corfu-popupinfo-mode 1);; Enable documentation popup (like corfu-doc, built-in)
+  )
+
+(use-package cape
+  :ensure t
+  :init
+  ;; Add helpful defaults to the global completion-at-point-functions list
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-keyword)
+  )
+
+;; (use-package company
+;;   :hook ((prog-mode text-mode LaTeX-mode))
+;;   :config
+;;   ;; (setq company-idle-delay
+;;   ;; 	(lambda () (if (company-in-string-or-comment) nil 0)))
+;;   (setq company-idle-delay 0)
+;;   (setq company-minimum-prefix-length 3)
+;;   (setq company-inhibit-inside-symbols t)
+;;   (setq company-selection-wrap-around t)
+;;   (setq company-tooltip-align-annotations t)
+;;   (setq company-format-margin-function #'company-text-icons-margin)
+;;   (setq company-text-face-extra-attributes
+;; 	'(:weight bold :slant italic))
+;;   (setq company-text-icons-add-background t)
+;;   (setq company-tooltip-offset-display 'lines)
+;;   )
 
 ;; (use-package company-box
 ;;   :hook (company-mode)
@@ -375,7 +414,10 @@ the current position of point, then move it to the beginning of the line."
 ;;               (local-set-key (kbd "C-c C-c") 'compile)))
 ;;   )
 
-;; (use-package yasnippet)
+(use-package yasnippet
+  :ensure t
+  :config
+  (yas-global-mode 1))
 
 (use-package cmake-mode)
 (use-package dockerfile-mode)
