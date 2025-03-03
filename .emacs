@@ -361,7 +361,17 @@ the current position of point, then move it to the beginning of the line."
   (add-to-list 'eglot-server-programs '(c-mode . ("clangd")))
   (add-to-list 'eglot-server-programs '(c++-mode . ("clangd")))
   (add-to-list 'eglot-server-programs '(python-mode . ("pylsp")))
-  (add-hook 'before-save-hook 'eglot-format-buffer)
+  ;; (add-hook 'before-save-hook 'eglot-format-buffer)
+
+
+  (defun my-eglot-managed-mode-hook ()
+    "Add or remove eglot-format-buffer from the local before-save-hook based on eglot-managed-mode."
+    (if eglot--managed-mode
+	;; When eglot is enabled, add eglot-format-buffer locally.
+	(add-hook 'before-save-hook 'eglot-format-buffer nil t)
+      ;; Otherwise, remove it if present.
+      (remove-hook 'before-save-hook 'eglot-format-buffer t)))
+  (add-hook 'eglot-managed-mode-hook 'my-eglot-managed-mode-hook)
 
   (defun my-recenter-if-outside-visible (orig-fun &rest args)
     "Recenter screen if `xref-find-definitions`
