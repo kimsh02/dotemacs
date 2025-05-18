@@ -234,7 +234,7 @@ the current position of point, then move it to the beginning of the line."
 
   (setq scroll-preserve-screen-position 'always)
   (setq scroll-conservatively 101)
-  (setq next-screen-context-lines 1)
+  ;; (setq next-screen-context-lines 1)
 
   (setq isearch-allow-scroll t)
   (setq-default auto-fill-function 'do-auto-fill)
