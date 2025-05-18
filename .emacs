@@ -304,6 +304,9 @@ the current position of point, then move it to the beginning of the line."
   :config
   (corfu-history-mode 1)         ;; Enable history for M-x corfu-history (save selection order)
   (corfu-popupinfo-mode 1);; Enable documentation popup (like corfu-doc, built-in)
+  (with-eval-after-load 'corfu
+    (add-hook 'lisp-interaction-mode-hook (lambda () (corfu-mode -1)))
+    (add-hook 'LaTeX-mode-hook          (lambda () (corfu-mode -1))))
   )
 
 (use-package cape
