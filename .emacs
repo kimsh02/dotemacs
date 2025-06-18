@@ -1,3 +1,5 @@
+;;; ~/.emacs            -*- lexical-binding: t; -*-
+
 (require 'package)
 (add-to-list 'package-archives
 	     '("melpa" . "https://melpa.org/packages/") t)
@@ -40,7 +42,7 @@
   (add-hook 'emacs-startup-hook (lambda () (recenter)))
   (add-hook 'emacs-startup-hook (lambda () (other-frame 0)))
   ;; (make-variable-buffer-local 'register-alist)
-  (set-register ?e '(file . "~/.emacs31.d/.emacs"))
+  (set-register ?e '(file . "~/dotemacs/.emacs"))
   (set-register ?i '(file . "~/org/ideas.org"))
   (set-register ?t '(file . "~/org/todos.org"))
   (set-register ?z '(file . "~/.zshrc"))
