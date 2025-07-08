@@ -560,10 +560,10 @@ the current position of point, then move it to the beginning of the line."
    )
   )
 
-(use-package exec-path-from-shell
-  :config
-  (exec-path-from-shell-initialize)
-  )
+;; (use-package exec-path-from-shell
+;;   :config
+;;   (exec-path-from-shell-initialize)
+;;   )
 
 ;; (use-package highlight-symbol
 ;;   :hook ((prog-mode text-mode LaTeX-mode)
@@ -596,7 +596,11 @@ the current position of point, then move it to the beginning of the line."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
+ '(package-selected-packages
+   '(auctex auto-package-update cape cmake-mode corfu counsel disable-mouse
+	    docker-compose-mode dockerfile-mode go-mode gruber-darker-theme
+	    hungry-delete js2-mode markdown-mode minions orderless prettier
+	    smartparens smex syntax-subword yasnippet)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
