@@ -270,7 +270,6 @@ the current position of point, then move it to the beginning of the line."
 
   :bind
   (
-   ("C-; r" . read-only-mode)
    ("C-c ;" . comment-or-uncomment-region)
    ("C-s-<backspace>" . kill-whole-line)
    )
