@@ -261,13 +261,20 @@ the current position of point, then move it to the beginning of the line."
   (add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
   (global-set-key (kbd "C-x C-b") 'ibuffer)
 
+  (defun my/dired-jump-and-recenter (&optional arg)
+    "Run `dired-jump` (C-x C-j) then recenter the window (C-l behavior)."
+    (interactive "P")
+    (dired-jump arg)
+    (recenter-top-bottom))
+  ;; Override the default C-x C-j
+  (global-set-key (kbd "C-x C-j") #'my/dired-jump-and-recenter)
+
   :bind
   (
    ("C-; r" . read-only-mode)
    ("C-c ;" . comment-or-uncomment-region)
    ("C-s-<backspace>" . kill-whole-line)
    )
-
   )
 
 (use-package gruber-darker-theme
@@ -582,6 +589,8 @@ the current position of point, then move it to the beginning of the line."
   :config
   (global-disable-mouse-mode)
   )
+
+(use-package markdown-mode)
 
 (put 'dired-find-alternate-file 'disabled nil)
 (custom-set-variables
