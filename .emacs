@@ -315,6 +315,7 @@ the current position of point, then move it to the beginning of the line."
     (add-hook 'lisp-interaction-mode-hook (lambda () (corfu-mode -1)))
     (add-hook 'LaTeX-mode-hook          (lambda () (corfu-mode -1)))
     (add-hook 'yaml-mode-hook          (lambda () (corfu-mode -1))))
+    (add-hook 'org-mode-hook          (lambda () (corfu-mode -1))))
   )
 
 (use-package cape
