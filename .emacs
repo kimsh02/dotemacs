@@ -314,7 +314,7 @@ the current position of point, then move it to the beginning of the line."
   (with-eval-after-load 'corfu
     (add-hook 'lisp-interaction-mode-hook (lambda () (corfu-mode -1)))
     (add-hook 'LaTeX-mode-hook          (lambda () (corfu-mode -1)))
-    (add-hook 'yaml-mode-hook          (lambda () (corfu-mode -1))))
+    (add-hook 'yaml-mode-hook          (lambda () (corfu-mode -1)))
     (add-hook 'org-mode-hook          (lambda () (corfu-mode -1))))
   )
 
@@ -592,7 +592,6 @@ the current position of point, then move it to the beginning of the line."
 
 (use-package markdown-mode)
 
-(put 'dired-find-alternate-file 'disabled nil)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -609,3 +608,4 @@ the current position of point, then move it to the beginning of the line."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+(put 'dired-find-alternate-file 'disabled nil)
