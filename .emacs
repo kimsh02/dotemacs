@@ -313,7 +313,8 @@ the current position of point, then move it to the beginning of the line."
   (corfu-popupinfo-mode 1);; Enable documentation popup (like corfu-doc, built-in)
   (with-eval-after-load 'corfu
     (add-hook 'lisp-interaction-mode-hook (lambda () (corfu-mode -1)))
-    (add-hook 'LaTeX-mode-hook          (lambda () (corfu-mode -1))))
+    (add-hook 'LaTeX-mode-hook          (lambda () (corfu-mode -1)))
+    (add-hook 'org-mode-hook          (lambda () (corfu-mode -1))))
   )
 
 (use-package cape
