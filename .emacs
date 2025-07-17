@@ -49,7 +49,7 @@
   (set-register ?g '(file . "~/.emacs.d/elpa/gruber-darker-theme-20231026.2031/gruber-darker-theme.el"))
   (advice-add 'jump-to-register :after (lambda (&rest _) (recenter)))
   (advice-add 'bookmark-jump :after (lambda (&rest _) (recenter)))
-  (delete-selection-mode 0)
+  (delete-selection-mode -1)
   (global-set-key (kbd "C-/") 'undo-only)
   (scroll-bar-mode -1)
   ;; (transient-mark-mode -1)
